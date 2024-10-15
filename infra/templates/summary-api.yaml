@@ -1,0 +1,125 @@
+openapi: "3.0.1"
+info:
+  title: "Contact-Summarization-API"
+  version: "0.0.1"
+
+# Enable Request Validation
+x-amazon-apigateway-request-validators:
+  standard: 
+    validateRequestBody: true
+    validateRequestParameters: true
+
+x-amazon-apigateway-gateway-responses:
+  DEFAULT_4XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Origin: "'${cors_allowed_domain}'"
+  ACCESS_DENIED:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Origin: "'${cors_allowed_domain}'"
+  MISSING_AUTHENTICATION_TOKEN:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Origin: "'${cors_allowed_domain}'"
+  EXPIRED_TOKEN:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Origin: "'${cors_allowed_domain}'"
+  AUTHORIZER_FAILURE:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Origin: "'${cors_allowed_domain}'"
+  AUTHORIZER_CONFIGURATION_ERROR:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Origin: "'${cors_allowed_domain}'"
+
+paths:
+  /summarization:
+    post:
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/summaryRequest"
+      responses:
+        "200":
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/summaryResponse"
+      x-amazon-apigateway-request-validator: standard
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
+        httpMethod: "POST"
+        uri: "${summarization_function_arn}"
+        connectionType: "INTERNET"
+        timeoutInMillis: 29000
+    options:
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'OPTIONS,POST'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Origin: "'${cors_allowed_domain}'"
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        passthroughBehavior: "when_no_match"
+        type: "mock"
+
+components:
+  schemas:
+    summaryRequest:
+      title: "Input request for Summarization"
+      type: "object"
+      properties:
+        contactId:
+          type: string
+        instanceArn:
+          type: string
+      required:
+        - contactId
+      additionalProperties: true
+
+    summaryResponse:
+      title: "Response Summary Object"
+      type: "object"
+      properties:
+        transcript:
+          type: string
+        summary:
+          type: string
+      additionalProperties: true
+    
+    basicObject:
+      title: "Simple Object"
+      type: "object"
+    
+    Empty:
+      title: Empty Schema
+      type: object
+        
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      name: x-api-key
+      in: header
