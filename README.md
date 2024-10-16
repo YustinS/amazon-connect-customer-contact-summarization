@@ -19,15 +19,16 @@ This solution also includes a version that will automatically submit all valid V
 
 This codebase follows a consistent pattern to deploy, you just need to build the code, then move the appropriate environment files (`version.tf` and `terraform.tfvars`) into the directory alongside the other TF files
 
-1. navigate to [code/call-summarization/](./code/call-summarization/)
+1. Navigate to [code/call-summarization/](./code/call-summarization/)
 2. Run `nvm use` (assuming you have NVM installed) to initialize the NodeJS version the code is built with
-3. Adjust the prompt and system prompt as needed in [helpers.ts](./code/call-summarization/src/helpers.ts), lines 236-253 in the base repo.
-4. Run `npm run package` to lint and build the codebase. This will generate the ZIP file OpenTofu/Terraform needs
-5. Navigate to [infra/](./infra/)
-6. Copy the relevant environment files from their folder into the same directory as the rest of the files
-7. Make adjustments as required. For example, you may remove the/disable the Eventbridge rule that automatically summarizes if only the API functionality is needed.
-8. Deploy as required. `terraform init`/`tofu init`, `terraform plan -out plan.tfplan`/`tofu plan -out plan.tfplan`, and `terraform apply plan.tfplan`/`tofu apply plan.tfplan` as you normally would
-9. Review and test
+3. Run `npm i` to install all the dependencies that are required
+4. Adjust the prompt and system prompt as needed in [helpers.ts](./code/call-summarization/src/helpers.ts), lines 236-253 in the base repo.
+5. Run `npm run package` to lint and build the codebase. This will generate the ZIP file OpenTofu/Terraform needs
+6. Navigate to [infra/](./infra/)
+7. Copy the relevant environment files from their folder into the same directory as the rest of the files
+8. Make adjustments as required. For example, you may remove the/disable the Eventbridge rule that automatically summarizes if only the API functionality is needed.
+9. Deploy as required. `terraform init`/`tofu init`, `terraform plan -out plan.tfplan`/`tofu plan -out plan.tfplan`, and `terraform apply plan.tfplan`/`tofu apply plan.tfplan` as you normally would
+10. Review and test
 
 ## Enhancements
 
